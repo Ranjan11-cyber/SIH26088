@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="greenLeaf" x1="0%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#15803d" />
+      <stop offset="60%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#4ade80" />
+    </linearGradient>
+    <linearGradient id="blueLeaf" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#1e40af" />
+      <stop offset="60%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="tealLeaf" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0e7490" />
+      <stop offset="60%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+    <linearGradient id="stemBlue" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+
+  <!-- Stem & branches -->
+  <path 
+    d="M 47 88 L 47 70 C 47 62 41 58 35 56 C 42 58 47 64 47 70 L 47 88 Z" 
+    fill="url(#stemBlue)" 
+  />
+  <path 
+    d="M 48 88 L 52 88 L 52 44 L 48 44 Z" 
+    fill="url(#stemBlue)" 
+    rx="2"
+  />
+  <path 
+    d="M 47 68 C 47 58 38 52 30 52 C 38 55 45 61 47 68 Z" 
+    fill="url(#stemBlue)" 
+  />
+  <path 
+    d="M 53 68 C 53 58 62 52 70 52 C 62 55 55 61 53 68 Z" 
+    fill="url(#stemBlue)" 
+  />
+
+  <!-- Top Center Leaf (Green) -->
+  <path 
+    d="M 50 44 C 36 34 38 18 52 8 C 66 18 64 34 50 44 Z" 
+    fill="url(#greenLeaf)" 
+  />
+
+  <!-- Left Leaf (Royal Blue) -->
+  <path 
+    d="M 46 68 C 32 72 16 62 12 36 C 28 32 44 48 46 68 Z" 
+    fill="url(#blueLeaf)" 
+  />
+
+  <!-- Right Leaf (Teal / Turquoise) -->
+  <path 
+    d="M 54 68 C 68 72 84 62 88 36 C 72 32 56 48 54 68 Z" 
+    fill="url(#tealLeaf)" 
+  />
+
+  <!-- Clean central stem column over junction -->
+  <path 
+    d="M 48 54 L 52 54 L 52 88 C 52 89.5 50.8 90.5 49.5 90.5 C 48.2 90.5 48 89.5 48 88 Z" 
+    fill="url(#stemBlue)" 
+  />
+</svg>

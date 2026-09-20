@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="sahayaGreen" x1="0%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#15803d" />
+      <stop offset="60%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#4ade80" />
+    </linearGradient>
+    <linearGradient id="sahayaBlue" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#1e40af" />
+      <stop offset="60%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="sahayaTeal" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0e7490" />
+      <stop offset="60%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+    <linearGradient id="sahayaStem" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+
+  <!-- Central Stem & branching ribs -->
+  <path 
+    d="M 47.5 88 L 52.5 88 L 52.5 44 L 47.5 44 Z" 
+    fill="url(#sahayaStem)" 
+  />
+  <path 
+    d="M 47.5 68 C 47.5 56 36 50 28 50 C 36 54 44 60 47.5 68 Z" 
+    fill="url(#sahayaStem)" 
+  />
+  <path 
+    d="M 52.5 68 C 52.5 56 64 50 72 50 C 64 54 56 60 52.5 68 Z" 
+    fill="url(#sahayaStem)" 
+  />
+
+  <!-- Top Center Leaf (Green) -->
+  <path 
+    d="M 50 44 C 36 34 38 18 52 8 C 66 18 64 34 50 44 Z" 
+    fill="url(#sahayaGreen)" 
+  />
+
+  <!-- Left Leaf (Royal Blue) -->
+  <path 
+    d="M 46 68 C 32 72 16 62 12 36 C 28 32 44 48 46 68 Z" 
+    fill="url(#sahayaBlue)" 
+  />
+
+  <!-- Right Leaf (Teal / Turquoise) -->
+  <path 
+    d="M 54 68 C 68 72 84 62 88 36 C 72 32 56 48 54 68 Z" 
+    fill="url(#sahayaTeal)" 
+  />
+
+  <!-- Stem Base -->
+  <path 
+    d="M 48 54 L 52 54 L 52 88 C 52 89.5 50.8 90.5 49.5 90.5 C 48.2 90.5 48 89.5 48 88 Z" 
+    fill="url(#sahayaStem)" 
+  />
+</svg>

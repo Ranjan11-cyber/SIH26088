@@ -1,0 +1,10 @@
+{
+  "name": "Sahaya - Cooperative AI Platform",
+  "description": "AI-Powered Multilingual Cooperative Assistance Web Application providing source-grounded statutory bylaws, schemes navigator, and grievance petition builder in Kannada, Hindi, and English.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
