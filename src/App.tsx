@@ -18,7 +18,10 @@ export default function App() {
     const saved = localStorage.getItem('sahaya_language');
     return (saved as SupportedLanguage) || 'en';
   });
-  const [activeTab, setActiveTab] = useState<string>('chat');
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const isAuth = localStorage.getItem('sahaya_authenticated') === 'true';
+    return isAuth ? 'chat' : 'login';
+  });
   const [isRoleModalOpen, setIsRoleModalOpen] = useState<boolean>(false);
   const [trackedRefId, setTrackedRefId] = useState<string>('GRV-2026-00042');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {

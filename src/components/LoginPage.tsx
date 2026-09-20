@@ -78,7 +78,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [activeTab, setActiveTab] = useState<'citizen' | 'official'>('citizen');
 
   // Citizen / Member Form
-  const [mobileNumber, setMobileNumber] = useState<string>('9481234567');
+  const [mobileNumber, setMobileNumber] = useState<string>('');
   const [memberId, setMemberId] = useState<string>('');
   const [otpStep, setOtpStep] = useState<boolean>(false);
   const [otpValue, setOtpValue] = useState<string>('');
@@ -87,8 +87,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
 
   // Official Form
-  const [officialId, setOfficialId] = useState<string>('SEC-BELAGAVI-09');
-  const [officialPin, setOfficialPin] = useState<string>('****');
+  const [officialId, setOfficialId] = useState<string>('');
+  const [officialPin, setOfficialPin] = useState<string>('');
   const [officialDistrict, setOfficialDistrict] = useState<string>('Belagavi');
   const [officialError, setOfficialError] = useState<string | null>(null);
 
@@ -197,276 +197,300 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] py-12 px-4 flex flex-col justify-center items-center">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+    <div className="min-h-[calc(100vh-140px)] py-12 px-4 flex flex-col justify-center items-center bg-slate-50">
+      <div className="w-full max-w-4xl bg-white rounded-xl border border-slate-200/90 shadow-sm md:grid md:grid-cols-12 overflow-hidden">
         
-        {/* Header */}
-        <div className="text-center space-y-1">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-50 flex items-center justify-center mb-3 border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-colors">
-            <SahayaLogo size={40} />
-          </div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900">
-            {t.login_portal_title || 'Sign In'}
-          </h2>
-          <p className="text-xs text-slate-500">
-            {t.login_portal_subtitle || 'Access cooperative records, schemes, and legal guidance.'}
-          </p>
-        </div>
+        {/* Left Section: Secure Cooperative Access (Official Login) */}
+        <div className="p-6 sm:p-8 md:col-span-7 flex flex-col justify-between space-y-6 border-b md:border-b-0 md:border-r border-slate-100">
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                <SahayaLogo size={28} />
+              </div>
+              <div>
+                <h2 className="text-lg font-extrabold tracking-tight text-slate-900 uppercase">
+                  {t.login_portal_title || 'Sahaya Portal'}
+                </h2>
+                <p className="text-xs text-slate-500 font-medium leading-normal">
+                  {t.login_portal_subtitle || 'Official Cooperative Governance Platform'}
+                </p>
+              </div>
+            </div>
 
-        {/* Tab Toggle */}
-        <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-medium text-slate-600">
-          <button
-            type="button"
-            onClick={() => { setActiveTab('citizen'); setOtpStep(false); }}
-            className={`flex-1 py-1.5 rounded-lg transition-all ${
-              activeTab === 'citizen'
-                ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                : 'hover:text-slate-900'
-            }`}
-          >
-            {t.login_citizen_tab || 'Member (Mobile OTP)'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('official')}
-            className={`flex-1 py-1.5 rounded-lg transition-all ${
-              activeTab === 'official'
-                ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                : 'hover:text-slate-900'
-            }`}
-          >
-            {t.login_official_tab || 'Secretary / Official'}
-          </button>
-        </div>
+            {/* Tab Toggle */}
+            <div className="flex bg-slate-100 p-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              <button
+                type="button"
+                onClick={() => { setActiveTab('citizen'); setOtpStep(false); }}
+                className={`flex-1 py-2 rounded-md transition-all ${
+                  activeTab === 'citizen'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'hover:text-slate-900'
+                }`}
+              >
+                {t.login_citizen_tab || 'Member Access'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('official')}
+                className={`flex-1 py-2 rounded-md transition-all ${
+                  activeTab === 'official'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'hover:text-slate-900'
+                }`}
+              >
+                {t.login_official_tab || 'Official Sign-In'}
+              </button>
+            </div>
 
-        {/* Member OTP Flow */}
-        {activeTab === 'citizen' && (
-          <div>
-            {!otpStep ? (
-              <form onSubmit={handleRequestOtp} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    {t.mobile_number || 'Mobile Number'}
+            {/* Member OTP Flow */}
+            {activeTab === 'citizen' && (
+              <div className="space-y-4">
+                {!otpStep ? (
+                  <form onSubmit={handleRequestOtp} className="space-y-4">
+                    <div className="space-y-1">
+                      <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                        {t.mobile_number || 'Mobile Number'}
+                      </label>
+                      <div className="relative">
+                        <Smartphone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="tel"
+                          value={mobileNumber}
+                          onChange={(e) => setMobileNumber(e.target.value)}
+                          placeholder="e.g. 10-digit number"
+                          className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:bg-white transition-all font-medium"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                        {t.member_id_or_number || 'Aadhar or PACS Member ID (Optional)'}
+                      </label>
+                      <input
+                        type="text"
+                        value={memberId}
+                        onChange={(e) => setMemberId(e.target.value)}
+                        placeholder="e.g. 12-digit Aadhar or PACS ID"
+                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:bg-white transition-all font-medium"
+                      />
+                    </div>
+
+                    {citizenError && (
+                      <div className="text-xs text-rose-600 flex items-center gap-1.5 bg-rose-50/50 p-2.5 rounded-lg border border-rose-100">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        <span className="font-medium">{citizenError}</span>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                    >
+                      <span>{t.get_otp || 'Request Verification Code'}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleVerifyOtp} className="space-y-4">
+                    <div className="flex items-center justify-between text-xs text-slate-500">
+                      <span>Code sent to +91 {mobileNumber}</span>
+                      <button
+                        type="button"
+                        onClick={() => setOtpStep(false)}
+                        className="text-emerald-700 hover:underline font-bold"
+                      >
+                        Change Number
+                      </button>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="relative">
+                        <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          maxLength={6}
+                          value={otpValue}
+                          onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ''))}
+                          placeholder="Enter 6-digit code"
+                          className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs tracking-widest text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:bg-white text-center font-mono"
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <button
+                        type="button"
+                        onClick={handleAutoFillDemoOtp}
+                        className="text-xs text-emerald-700 hover:text-emerald-800 font-bold cursor-pointer"
+                      >
+                        Use Sandbox Code (729401)
+                      </button>
+                      <span className="text-slate-400">
+                        {countdown > 0 ? `Resend in ${countdown}s` : (
+                          <button
+                            type="button"
+                            onClick={() => setCountdown(30)}
+                            className="text-slate-600 hover:underline"
+                          >
+                            Resend Code
+                          </button>
+                        )}
+                      </span>
+                    </div>
+
+                    {citizenError && (
+                      <div className="text-xs text-rose-600 flex items-center gap-1.5 bg-rose-50/50 p-2.5 rounded-lg border border-rose-100">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        <span className="font-medium">{citizenError}</span>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={isVerifying}
+                      className="w-full py-2.5 bg-emerald-800 hover:bg-emerald-900 disabled:opacity-50 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                    >
+                      {isVerifying ? (
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <span>{t.verify_and_login || 'Verify & Login'}</span>
+                          <CheckCircle2 className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
+
+            {/* Official Flow */}
+            {activeTab === 'official' && (
+              <form onSubmit={handleOfficialLogin} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    {t.official_id || 'Staff Registration Code'}
+                  </label>
+                  <input
+                    type="text"
+                    value={officialId}
+                    onChange={(e) => setOfficialId(e.target.value)}
+                    placeholder="e.g. SEC-BELAGAVI-09"
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:bg-white font-medium"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    {t.official_pin || 'Security Passkey PIN'}
                   </label>
                   <div className="relative">
-                    <Smartphone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
-                      type="tel"
-                      value={mobileNumber}
-                      onChange={(e) => setMobileNumber(e.target.value)}
-                      placeholder="9481234567"
-                      className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
+                      type="password"
+                      value={officialPin}
+                      onChange={(e) => setOfficialPin(e.target.value)}
+                      placeholder="••••"
+                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:bg-white"
                       required
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    {t.member_id_or_number || 'PACS / Milk Union Member ID (Optional)'}
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    District Jurisdiction
                   </label>
-                  <input
-                    type="text"
-                    value={memberId}
-                    onChange={(e) => setMemberId(e.target.value)}
-                    placeholder="e.g. MDR-412"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
-                  />
-                </div>
-
-                {citizenError && (
-                  <div className="text-xs text-rose-600 flex items-center gap-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>{citizenError}</span>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
-                >
-                  <span>{t.get_otp || 'Get Verification Code'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyOtp} className="space-y-4">
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>Code sent to +91 {mobileNumber}</span>
-                  <button
-                    type="button"
-                    onClick={() => setOtpStep(false)}
-                    className="text-emerald-700 hover:underline font-medium"
+                  <select
+                    value={officialDistrict}
+                    onChange={(e) => setOfficialDistrict(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:bg-white font-medium"
                   >
-                    Change
-                  </button>
+                    <option value="Belagavi">Belagavi</option>
+                    <option value="Mandya">Mandya</option>
+                    <option value="Hassan">Hassan</option>
+                    <option value="Mysuru">Mysuru</option>
+                    <option value="Tumakuru">Tumakuru</option>
+                  </select>
                 </div>
 
-                <div>
-                  <div className="relative">
-                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      maxLength={6}
-                      value={otpValue}
-                      onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Enter 6-digit code"
-                      className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs tracking-widest text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-center font-mono"
-                      autoFocus
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-xs">
-                  <button
-                    type="button"
-                    onClick={handleAutoFillDemoOtp}
-                    className="text-xs text-emerald-700 hover:text-emerald-800 font-medium cursor-pointer"
-                  >
-                    Auto-fill demo (729401)
-                  </button>
-                  <span className="text-slate-400">
-                    {countdown > 0 ? `Resend in ${countdown}s` : (
-                      <button
-                        type="button"
-                        onClick={() => setCountdown(30)}
-                        className="text-slate-600 hover:underline"
-                      >
-                        Resend Code
-                      </button>
-                    )}
-                  </span>
-                </div>
-
-                {citizenError && (
-                  <div className="text-xs text-rose-600 flex items-center gap-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>{citizenError}</span>
+                {officialError && (
+                  <div className="text-xs text-rose-600 flex items-center gap-1.5 bg-rose-50/50 p-2.5 rounded-lg border border-rose-100">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span className="font-medium">{officialError}</span>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={isVerifying}
-                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+                  className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
                 >
                   {isVerifying ? (
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <RefreshCw className="w-4 h-4 animate-spin" />
                   ) : (
                     <>
-                      <span>{t.verify_and_login || 'Verify & Sign In'}</span>
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>{t.official_login_btn || 'Verify Official Credentials'}</span>
+                      <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
               </form>
             )}
           </div>
-        )}
 
-        {/* Official Flow */}
-        {activeTab === 'official' && (
-          <form onSubmit={handleOfficialLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
-                {t.official_id || 'Society Registration / Staff ID'}
-              </label>
-              <input
-                type="text"
-                value={officialId}
-                onChange={(e) => setOfficialId(e.target.value)}
-                placeholder="e.g. SEC-BELAGAVI-09"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
-                {t.official_pin || 'Security Passkey / PIN'}
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  value={officialPin}
-                  onChange={(e) => setOfficialPin(e.target.value)}
-                  placeholder="••••"
-                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
-                District Jurisdiction
-              </label>
-              <select
-                value={officialDistrict}
-                onChange={(e) => setOfficialDistrict(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
-              >
-                <option value="Belagavi">Belagavi</option>
-                <option value="Mandya">Mandya</option>
-                <option value="Hassan">Hassan</option>
-                <option value="Mysuru">Mysuru</option>
-                <option value="Tumakuru">Tumakuru</option>
-              </select>
-            </div>
-
-            {officialError && (
-              <div className="text-xs text-rose-600 flex items-center gap-1.5">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                <span>{officialError}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isVerifying}
-              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
-            >
-              {isVerifying ? (
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <>
-                  <span>{t.official_login_btn || 'Staff Sign In'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </>
-              )}
-            </button>
-          </form>
-        )}
-
-        {/* Quick Demo Switcher */}
-        <div className="pt-4 border-t border-slate-100 space-y-2">
-          <div className="text-[11px] font-medium text-slate-400 text-center">
-            Or test with a 1-click persona:
-          </div>
-          <div className="flex flex-wrap gap-1.5 justify-center">
-            {DEMO_PERSONAS.map(p => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => handleSelectDemoPersona(p)}
-                className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs transition-colors cursor-pointer"
-              >
-                {p.roleLabel}
-              </button>
-            ))}
-          </div>
+          {/* Left section has no footer now */}
         </div>
 
-        {/* Continue as Guest */}
-        <div className="text-center pt-1">
-          <button
-            type="button"
-            onClick={onContinueAsGuest}
-            className="text-xs text-slate-500 hover:text-slate-800 transition-colors"
-          >
-            {t.continue_guest || 'Continue as public guest'}
-          </button>
+        {/* Right Section: Demos & Sandbox Access (col-span-5) */}
+        <div className="p-6 sm:p-8 md:col-span-5 bg-slate-50/70 flex flex-col justify-center space-y-8">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
+                Select One-Click Persona:
+              </label>
+              <div className="flex flex-col gap-2">
+                {DEMO_PERSONAS.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handleSelectDemoPersona(p)}
+                    className="w-full px-4 py-3 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 border border-slate-200 hover:border-emerald-300 text-xs font-semibold transition-all cursor-pointer text-left flex items-center justify-between group shadow-2xs"
+                  >
+                    <span>{p.roleLabel}</span>
+                    <span className="text-[10px] text-slate-400 group-hover:text-emerald-700 transition-colors font-medium">
+                      Simulate &rarr;
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-6 border-t border-slate-200">
+            <div className="space-y-2">
+              <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
+                Public Exploration:
+              </label>
+              <button
+                type="button"
+                onClick={onContinueAsGuest}
+                className="w-full py-3 bg-white hover:bg-slate-100 text-slate-800 hover:text-slate-900 border border-slate-300 hover:border-slate-400 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-2xs flex items-center justify-center gap-1.5"
+              >
+                <UserCheck className="w-4 h-4 text-slate-500" />
+                <span>Continue as Public Citizen</span>
+              </button>
+              <p className="text-[10px] text-slate-400 text-center font-medium leading-normal">
+                Access statutory libraries and general FAQs without registering credentials.
+              </p>
+            </div>
+          </div>
         </div>
 
       </div>
