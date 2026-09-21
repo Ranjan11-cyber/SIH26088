@@ -242,43 +242,63 @@ export const SchemesNavigator: React.FC<SchemesNavigatorProps> = ({ language }) 
               </div>
 
               {/* Application Action Footnote */}
-              <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                <div className="text-xs text-slate-500">
-                  <span>How to Apply: </span>
-                  <strong className="text-slate-800">{selectedScheme.application_mode}</strong>
+              <div className="pt-4 border-t border-slate-100 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="text-xs text-slate-600">
+                    <span className="text-slate-400">Application Mode: </span>
+                    <strong className="text-slate-800 font-semibold">{selectedScheme.application_mode}</strong>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        const text = `SCHEME APPLICATION CHECKLIST\n${selectedScheme.name.en}\nSubsidy: ${selectedScheme.subsidy_highlight}\n\nOfficial Portal: ${selectedScheme.official_link || 'Apply at Local PACS / Registrar Office'}\n\nRequired Documents:\n${selectedScheme.documents_required.map(d => `- ${d}`).join('\n')}\n\nApply via: ${selectedScheme.application_mode}`;
+                        const blob = new Blob([text], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${selectedScheme.id}-checklist.txt`;
+                        a.click();
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download Checklist</span>
+                    </button>
+
+                    {selectedScheme.official_link ? (
+                      <a
+                        href={selectedScheme.official_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-all cursor-pointer"
+                      >
+                        <span>Official Portal</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    ) : (
+                      <span className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-xl bg-slate-100 text-slate-700 border border-slate-200">
+                        <span>In-Person at PACS / ARCS</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      const text = `SCHEME APPLICATION CHECKLIST\n${selectedScheme.name.en}\nSubsidy: ${selectedScheme.subsidy_highlight}\n\nRequired Documents:\n${selectedScheme.documents_required.map(d => `- ${d}`).join('\n')}\n\nApply via: ${selectedScheme.application_mode}`;
-                      const blob = new Blob([text], { type: 'text/plain' });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = `${selectedScheme.id}-checklist.txt`;
-                      a.click();
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Download Checklist</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      if (selectedScheme.official_link) {
-                        window.open(selectedScheme.official_link, '_blank', 'noopener,noreferrer');
-                      } else {
-                        alert(`Direct portal integration: Please carry your share certificate and RTC to your nearest Primary Agricultural Credit Society (PACS) or District Registrar Desk for instant DBT enrollment.`);
-                      }
-                    }}
-                    className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-all"
-                  >
-                    <span>Proceed to Application</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                {selectedScheme.official_link && (
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5 flex items-center justify-between text-xs text-slate-600">
+                    <span className="truncate max-w-[80%] font-mono text-[11px] text-emerald-800">
+                      {selectedScheme.official_link}
+                    </span>
+                    <a
+                      href={selectedScheme.official_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-emerald-700 hover:text-emerald-800 font-bold hover:underline shrink-0 text-xs flex items-center gap-1"
+                    >
+                      Open Link <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           ) : (

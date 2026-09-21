@@ -97,9 +97,68 @@ async function queryGeminiWithFallback(
 }
 
 // -------------------------------------------------------------
+// Cooperative Domain Relevance Detection
+// Accurately differentiates cooperative, agricultural & welfare queries from irrelevant queries
+// -------------------------------------------------------------
+function isCooperativeRelevantQuery(text: string): boolean {
+  if (!text || text.trim().length === 0) return true;
+  const q = text.toLowerCase();
+
+  // Greetings, identity, and capabilities queries
+  const greetingOrMeta = [
+    'hi', 'hello', 'hey', 'namaste', 'namaskar', 'namaskara', 'vanakkam', 'sahaya',
+    'who are you', 'what are you', 'help', 'capabilities', 'what can you do', 'how can you help',
+    'ನಮಸ್ಕಾರ', 'ಸಹಾಯ', 'ನೀವು ಯಾರು', 'ಏನು ಮಾಡಬಹುದು',
+    'नमस्ते', 'सहाय', 'आप कौन हैं', 'क्या कर सकते हैं'
+  ];
+  if (greetingOrMeta.some(g => q.includes(g))) return true;
+
+  // Domain terms for cooperative societies, farming, dairy, rural welfare, grievances, bylaws
+  const domainKeywords = [
+    // Cooperative & Governance
+    'coop', 'cooperative', 'sahakar', 'sahakara', 'society', 'sangha', 'samiti', 'pacs', 'dccb', 'scb', 'apex',
+    'bylaw', 'bye-law', 'bye law', 'clause', 'member', 'membership', 'share', 'dividend', 'bonus', 'director',
+    'president', 'secretary', 'agm', 'gbm', 'meeting', 'vote', 'voting', 'election', 'quorum', 'audit', 'inquiry',
+    'registrar', 'arcs', 'rcs', 'dispute', 'petition', 'grievance', 'complaint', 'appeal', 'section 20', 'section 27',
+    'section 64', 'section 70', 'section 106', 'mscs', 'ncui', 'nabard', 'nddb',
+
+    // Agriculture & Inputs
+    'farm', 'farmer', 'agriculture', 'agricultural', 'crop', 'land', 'rtc', 'pahani', 'patta', 'chitta', 'adangal',
+    'seed', 'seeds', 'fertilizer', 'fertilizers', 'manure', 'pesticide', 'tractor', 'irrigation', 'borewell', 'pump',
+    'water', 'soil', 'harvest', 'kharif', 'rabi', 'paddy', 'wheat', 'sugarcane', 'cotton', 'ragi',
+
+    // Dairy & Livestock
+    'milk', 'dairy', 'kmf', 'nandini', 'amul', 'fat', 'snf', 'lactometer', 'procurement', 'cattle', 'cow', 'buffalo',
+    'livestock', 'bmc', 'chilling', 'animal husbandry', 'didf',
+
+    // Credit & Finance
+    'loan', 'credit', 'kcc', 'kisan', 'interest', 'subvention', 'waiver', 'repayment', 'defaulter', 'dbt', 'subsidy',
+    'grant', 'bank', 'sanction', 'rupay',
+
+    // Schemes & Citizen Welfare
+    'scheme', 'yojana', 'ssp', 'scholarship', 'student', 'pension', 'kshemanidhi', 'yashaswini', 'health', 'insurance',
+    'pmfby', 'bima', 'ayushman', 'kusum', 'solar', 'ration', 'portal', 'apply', 'eligibility', 'documents', 'jan samarth',
+
+    // Regional language stems
+    'ಸಹಕಾರ', 'ಸಂಘ', 'ರೈತ', 'ಕೃಷಿ', 'ಬೆಳೆ', 'ಸಾಲ', 'ಬಡ್ಡಿ', 'ಸಹಾಯಧನ', 'ಯೋಜನೆ', 'ಕುಸುಮ್', 'ಸೌರ', 'ಹಾಲು',
+    'ಹೈನುಗಾರಿಕೆ', 'ಫ್ಯಾಟ್', 'ಬೈಲಾ', 'ಉಪನಿಯಮ', 'ಸದಸ್ಯ', 'ಮತ', 'ಚುನಾವಣೆ', 'ನಿಬಂಧಕ', 'ದೂರು', 'ಅರ್ಜಿ', 'ಗೊಬ್ಬರ',
+    'ವಿಮೆ', 'ಯಶಸ್ವಿನಿ', 'ಕೆಸಿಸಿ', 'ಪಹಣಿ', 'ಖಾತೆ', 'ನಂದಿನಿ', 'ಬೋನಸ್', 'ಶಾಸನ', 'ಕಾಯ್ದೆ',
+    'सहकार', 'समिति', 'किसान', 'कृषि', 'फसल', 'ऋण', 'ब्याज', 'अनुदान', 'योजना', 'कुसुम', 'सौर', 'दूध',
+    'डेयरी', 'फैट', 'उपनियम', 'सदस्य', 'मतदान', 'चुनाव', 'निबंधक', 'शिकायत', 'याचिका', 'खाद', 'बीमा', 'केसीसी'
+  ];
+
+  return domainKeywords.some(kw => q.includes(kw));
+}
+
+// -------------------------------------------------------------
 // Dynamic, Context-Relevant Legal & Scheme Source Citation Builder
 // -------------------------------------------------------------
 function getDynamicSources(message: string, jurisdiction: string, language: string) {
+  // If the query is out of scope / irrelevant, do NOT fabricate legal citations
+  if (!isCooperativeRelevantQuery(message)) {
+    return [];
+  }
+
   const query = message.toLowerCase();
   const sources = [];
 
@@ -468,7 +527,18 @@ CRITICAL FORMATTING INSTRUCTIONS (STRICT COMPLIANCE REQUIRED):
 6. Do not output escaped characters or raw formatting tokens.
 7. TOPIC CONTEXT PRESERVATION & SWITCHING:
 - Maintain full conversation context from previous chat messages if the user's current question is related or continues the same thread.
-- If the user switches topics (e.g., from local agriculture PACS rules to the Student Scholarship Portal (SSP), solar energy, or insurance), you MUST recognize this transition. DO NOT hallucinate, blend, or mix-match concepts from previous turns (such as referring to PACS, agricultural loans, or bylaws when answering an SSP or student welfare query). Treat the new query with its appropriate domain guidelines.`;
+- If the user switches topics (e.g., from local agriculture PACS rules to the Student Scholarship Portal (SSP), solar energy, or insurance), you MUST recognize this transition. DO NOT hallucinate, blend, or mix-match concepts from previous turns.
+8. HANDLING IRRELEVANT, UNRELATED, OR OUT-OF-SCOPE QUESTIONS:
+- If the user asks an irrelevant or out-of-scope question that is NOT related to Indian cooperatives, agriculture, rural welfare schemes, dairy farming, bylaws, crop loans, farmer rights, or governance (such as general trivia, coding, entertainment, sports, cooking, weather, personal chit-chat):
+  • Acknowledge their message politely in pure ${getLanguageScriptInstruction(language)}.
+  • Clearly state that you are "Sahaya" (ಸಹಾಯ • सहकार), an official statutory advisor and civic intelligence guide specialized specifically in cooperative societies, farmer/member rights, statutory bylaws, and government welfare schemes.
+  • Provide a polite, brief 1-sentence general answer or courtesy if appropriate, but courteously explain that your statutory expertise is dedicated to:
+    1. Agricultural Credit & KCC Loans (0% to 3% interest subvention, PACS credit)
+    2. Cooperative Governance & Member Bylaws (membership admission under Section 20, voting under Section 27)
+    3. Village Dairy & Milk Societies (automated fat/SNF testing transparency, patronage dividends)
+    4. Dispute & Grievance Petitions (filing statutory petitions under Section 70 to the Assistant Registrar)
+    5. Major Welfare Portals (SSP Scholarship, PM-KUSUM Solar Pumps, Yashaswini Health Scheme)
+  • Courteously invite them to ask any question regarding cooperative societies, farming benefits, or government schemes.`;
 
       let contents: any = message;
       if (Array.isArray(history) && history.length > 0) {
@@ -488,8 +558,13 @@ CRITICAL FORMATTING INSTRUCTIONS (STRICT COMPLIANCE REQUIRED):
       // Extract or provide statutory source citations
       const sources = getDynamicSources(message, jurisdiction, language);
 
+      const rawReply = sanitizeText(generatedResult.text);
+      const formattedReply = rawReply.toLowerCase().startsWith('hi, i am sahaya') || rawReply.toLowerCase().startsWith('hi i am sahaya')
+        ? rawReply
+        : `Hi, I am Sahaya.\n\n${rawReply}`;
+
       return res.json({
-        reply: sanitizeText(generatedResult.text),
+        reply: formattedReply,
         sources,
         evidence_strength: 'Statutory Law',
         language,
@@ -501,7 +576,16 @@ CRITICAL FORMATTING INSTRUCTIONS (STRICT COMPLIANCE REQUIRED):
     const normalizedQuery = message.toLowerCase();
     let reply = '';
 
-    if (normalizedQuery.includes('member') || normalizedQuery.includes('join') || normalizedQuery.includes('ಸದಸ್ಯ') || normalizedQuery.includes('सदस्य')) {
+    // Check if the query is out-of-scope / irrelevant
+    if (!isCooperativeRelevantQuery(message)) {
+      if (language === 'kn') {
+        reply = `ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಸಹಕಾರ ಆಡಳಿತ ಮತ್ತು ಶಾಸನಬದ್ಧ ಮಾರ್ಗದರ್ಶಕ 'ಸಹಾಯ'.\n\nನಿಮ್ಮ ಪ್ರಶ್ನೆಯು ಸಹಕಾರ ಸಂಘಗಳು, ಕೃಷಿ ಹಾಗೂ ಗ್ರಾಮೀಣ ಕಲ್ಯಾಣ ಯೋಜನೆಗಳ ವಿಷಯ ವ್ಯಾಪ್ತಿಯಿಂದ ಹೊರಗಿದೆ. ನಾನು ನಿಮಗೆ ಈ ಕೆಳಗಿನ ವಿಷಯಗಳಲ್ಲಿ ಅಧಿಕೃತ ನಿಯಮಗಳು ಹಾಗೂ ಮಾರ್ಗದರ್ಶನ ನೀಡಲು ಸಿದ್ಧನಿದ್ದೇನೆ:\n\n1. ಕಿಸಾನ್ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ (KCC) ಶೂನ್ಯ ಬಡ್ಡಿ ಬೆಳೆ ಸಾಲ ಮತ್ತು ಕೃಷಿ ಸಹಾಯಧನಗಳು.\n2. ಪ್ರಾಥಮಿಕ ಕೃಷಿ ಪತ್ತಿನ ಸಹಕಾರ ಸಂಘಗಳ (PACS) ಸದಸ್ಯತ್ವ, ಮಹಾಸಭೆ (AGM) ಮತದಾನದ ಹಕ್ಕು ಮತ್ತು ಮಾದರಿ ಉಪ-ನಿಯಮಗಳು.\n3. ಹಾಲು ಉತ್ಪಾದಕರ ಸಹಕಾರ ಸಂಘಗಳ (KMF) ಎಲೆಕ್ಟ್ರಾನಿಕ್ ಫ್ಯಾಟ್ ಪರೀಕ್ಷೆ ಮತ್ತು ವಾರ್ಷಿಕ ಬೋನಸ್ ಹಕ್ಕುಗಳು.\n4. ಕರ್ನಾಟಕ ಸಹಕಾರ ಸಂಘಗಳ ಕಾಯ್ದೆ ಸೆಕ್ಷನ್ ೭೦ ರ ಅಡಿಯಲ್ಲಿ ತಾಲೂಕು ಸಹಾಯಕ ನಿಬಂಧಕರಿಗೆ (ARCS) ದೂರು ಅರ್ಜಿ ಸಲ್ಲಿಕೆ.\n5. ಪಿಎಂ-ಕುಸುಮ್ ಸೌರ ಪಂಪ್, ಯಶಸ್ವಿನಿ ಆರೋಗ್ಯ ರಕ್ಷಣೆ ಮತ್ತು ಎಸ್‌ಎಸ್‌ಪಿ ವಿದ್ಯಾರ್ಥಿವೇತನ ಯೋಜನೆಗಳು.\n\nಸಹಕಾರ ಸಂಘಗಳ ನಿಯಮಗಳು, ಸದಸ್ಯರ ಹಕ್ಕುಗಳು ಅಥವಾ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳ ಕುರಿತು ದಯವಿಟ್ಟು ಯಾವುದೇ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಿ!`;
+      } else if (language === 'hi') {
+        reply = `नमस्ते! मैं आपका समर्पित सहकारी शासन एवं विनियामक सलाहकार 'सहाय' हूँ।\n\nआपका प्रश्न सहकारी समितियों, कृषि एवं सरकारी कल्याणकारी योजनाओं के विषय क्षेत्र से अलग प्रतीत होता है। मैं आपको निम्नलिखित विषयों पर आधिकारिक कानूनी व प्रक्रियात्मक सहायता प्रदान करने के लिए विशेष रूप से निर्मित हूँ:\n\n1. किसान क्रेडिट कार्ड (KCC) शून्य ब्याज फसल ऋण और कृषि अनुदान।\n2. पैक्स (PACS) सदस्यता नियम, आम सभा (AGM) मतदान अधिकार और मॉडल उपनियम।\n3. दुग्ध उत्पादक सहकारी समितियों में पारदर्शी स्वचालित फैट परीक्षण और वार्षिक संरक्षक बोनस।\n4. धारा 70 के तहत सहायक निबंधक (ARCS) के समक्ष सांविधिक विवाद याचिका प्रस्तुत करना।\n5. पीएम-कुसुम सौर पंप, यशस्विनी स्वास्थ्य और राज्य छात्रवृत्ति योजनाएं।\n\nकृपया सहकारी नियमों अथवा किसान कल्याण योजनाओं से संबंधित कोई भी प्रश्न पूछें!`;
+      } else {
+        reply = `Thank you for reaching out to Sahaya.\n\nI am your dedicated cooperative governance and regulatory advisor. Your question appears to be outside the scope of Indian cooperative societies, agriculture, and government welfare schemes.\n\nI specialize in providing legally grounded assistance on:\n\n1. Kisan Credit Card (KCC) 0% to 3% interest crop loans and agricultural subsidies.\n2. Primary Agricultural Credit Society (PACS) membership admission (Section 20), AGM voting rights (Section 27), and bylaws.\n3. Village Milk Producers' Cooperative (KMF/Dairy) automated fat/SNF testing transparency and patronage dividends.\n4. Section 70 statutory dispute filings before the Assistant Registrar of Cooperative Societies (ARCS).\n5. Major government welfare portals such as SSP Scholarships, PM-KUSUM Solar Pumps, and Yashaswini Health Scheme.\n\nPlease feel free to ask any question regarding cooperative society rules, member rights, or agricultural welfare schemes!`;
+      }
+    } else if (normalizedQuery.includes('member') || normalizedQuery.includes('join') || normalizedQuery.includes('ಸದಸ್ಯ') || normalizedQuery.includes('सदस्य')) {
       if (language === 'kn') {
         reply = `ಸಹಕಾರ ಸಂಘಗಳ ಕಾಯ್ದೆ ಸೆಕ್ಷನ್ ೨೦ ರ ಪ್ರಕಾರ ಸದಸ್ಯತ್ವ ನಿಯಮಗಳು:\n\n1. ಮುಕ್ತ ಸದಸ್ಯತ್ವ (Open Membership): ಸಂಘದ ಕಾರ್ಯವ್ಯಾಪ್ತಿಯಲ್ಲಿ ಕೃಷಿ ಭೂಮಿ ಅಥವಾ ನಿವಾಸ ಹೊಂದಿರುವ ಯಾವುದೇ ಭಾರತೀಯ ನಾಗರಿಕರು ಸದಸ್ಯತ್ವ ಪಡೆಯಲು ಅರ್ಹರಾಗಿರುತ್ತಾರೆ.\n\n2. ಅರ್ಜಿಯ ಕಾಲಮಿತಿ: ನೀವು ನಿಗದಿತ ಶುಲ್ಕದೊಂದಿಗೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಿದ ೬೦ ದಿನಗಳ ಒಳಗಾಗಿ ಸಂಘದ ಆಡಳಿತ ಮಂಡಳಿಯು ನಿರ್ಧಾರವನ್ನು ತಿಳಿಸಬೇಕು. ಇಲ್ಲವಾದಲ್ಲಿ ಇದು ಡೀಮ್ಡ್ ಅಡ್ಮಿಷನ್ (ತಿರಸ್ಕರಿಸಿಲ್ಲವೆಂದು ಭಾವಿಸಿ) ಪರಿಗಣನೆಗೆ ಬರುತ್ತದೆ.\n\n3. ಪರಿಹಾರ ಮಾರ್ಗ: ಸದಸ್ಯತ್ವವನ್ನು ಅನ್ಯಾಯವಾಗಿ ನಿರಾಕರಿಸಿದರೆ, ಕರ್ನಾಟಕ ಸಹಕಾರ ಸಂಘಗಳ ಕಾಯ್ದೆ ಸೆಕ್ಷನ್ ೭೦ ರ ಅಡಿಯಲ್ಲಿ ತಾಲೂಕು ಸಹಾಯಕ ನಿಬಂಧಕರಿಗೆ (ARCS) ನೇರವಾಗಿ ದೂರು ಅರ್ಜಿ ಸಲ್ಲಿಸಬಹುದು.\n\nಸಹಾಯ ವೇದಿಕೆಯ 'ದೂರು ಅರ್ಜಿ' ಟ್ಯಾಬ್ ಬಳಸಿ ನೀವು ನಿಬಂಧಕರಿಗೆ ಸಲ್ಲಿಸಲು ಅಧಿಕೃತ ಮನವಿ ಪತ್ರವನ್ನು ಸಿದ್ಧಪಡಿಸಬಹುದು.`;
       } else if (language === 'hi') {
@@ -537,8 +621,13 @@ CRITICAL FORMATTING INSTRUCTIONS (STRICT COMPLIANCE REQUIRED):
 
     const sources = getDynamicSources(message, jurisdiction, language);
 
+    const rawReply = sanitizeText(reply);
+    const formattedReply = rawReply.toLowerCase().startsWith('hi, i am sahaya') || rawReply.toLowerCase().startsWith('hi i am sahaya')
+      ? rawReply
+      : `Hi, I am Sahaya.\n\n${rawReply}`;
+
     return res.json({
-      reply: sanitizeText(reply),
+      reply: formattedReply,
       sources,
       evidence_strength: 'Statutory Law',
       language,

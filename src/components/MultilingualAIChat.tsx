@@ -35,7 +35,41 @@ function cleanTextForDisplay(text: string): string {
     .trim();
 }
 
-function classifyQueryDomain(text: string): 'scheme_query' | 'grievance_process' | 'governance_bylaws' | 'general_cooperative' {
+function isCooperativeRelevant(text: string): boolean {
+  if (!text || text.trim().length === 0) return true;
+  const q = text.toLowerCase();
+  const greetingOrMeta = [
+    'hi', 'hello', 'hey', 'namaste', 'namaskar', 'namaskara', 'vanakkam', 'sahaya',
+    'who are you', 'what are you', 'help', 'capabilities', 'what can you do', 'how can you help',
+    'ನಮಸ್ಕಾರ', 'ಸಹಾಯ', 'ನೀವು ಯಾರು', 'ಏನು ಮಾಡಬಹುದು',
+    'नमस्ते', 'सहाय', 'आप कौन हैं', 'क्या कर सकते हैं'
+  ];
+  if (greetingOrMeta.some(g => q.includes(g))) return true;
+
+  const keywords = [
+    'coop', 'cooperative', 'sahakar', 'sahakara', 'society', 'sangha', 'samiti', 'pacs', 'dccb', 'scb',
+    'bylaw', 'bye-law', 'bye law', 'clause', 'member', 'membership', 'share', 'dividend', 'bonus',
+    'president', 'secretary', 'agm', 'meeting', 'vote', 'voting', 'election', 'quorum', 'audit',
+    'registrar', 'arcs', 'rcs', 'dispute', 'petition', 'grievance', 'complaint', 'appeal',
+    'section 20', 'section 27', 'section 64', 'section 70', 'mscs',
+    'farm', 'farmer', 'agriculture', 'crop', 'land', 'rtc', 'pahani', 'patta', 'chitta',
+    'seed', 'fertilizer', 'manure', 'pesticide', 'tractor', 'irrigation', 'borewell', 'pump',
+    'milk', 'dairy', 'kmf', 'nandini', 'amul', 'fat', 'snf', 'cattle', 'cow',
+    'loan', 'credit', 'kcc', 'kisan', 'interest', 'subvention', 'waiver', 'subsidy',
+    'scheme', 'yojana', 'ssp', 'scholarship', 'pension', 'kshemanidhi', 'yashaswini', 'insurance', 'kusum', 'solar',
+    'ಸಹಕಾರ', 'ಸಂಘ', 'ರೈತ', 'ಕೃಷಿ', 'ಬೆಳೆ', 'ಸಾಲ', 'ಬಡ್ಡಿ', 'ಸಹಾಯಧನ', 'ಯೋಜನೆ', 'ಕುಸುಮ್', 'ಸೌರ', 'ಹಾಲು',
+    'ಫ್ಯಾಟ್', 'ಬೈಲಾ', 'ಉಪನಿಯಮ', 'ಸದಸ್ಯ', 'ಮತ', 'ಚುನಾವಣೆ', 'ನಿಬಂಧಕ', 'ದೂರು', 'ಅರ್ಜಿ', 'ಗೊಬ್ಬರ', 'ವಿಮೆ', 'ಯಶಸ್ವಿನಿ',
+    'सहकार', 'समिति', 'किसान', 'कृषि', 'फसल', 'ऋण', 'ब्याज', 'अनुदान', 'योजना', 'कुसुम', 'सौर', 'दूध',
+    'फैट', 'उपनियम', 'सदस्य', 'मतदान', 'चुनाव', 'निबंधक', 'शिकायत', 'याचिका', 'खाद', 'बीमा'
+  ];
+  return keywords.some(k => q.includes(k));
+}
+
+function classifyQueryDomain(text: string): 'scheme_query' | 'grievance_process' | 'governance_bylaws' | 'general_cooperative' | 'out_of_scope' {
+  if (!isCooperativeRelevant(text)) {
+    return 'out_of_scope';
+  }
+
   const normalized = text.toLowerCase();
   
   const grievanceKeywords = [
@@ -83,7 +117,7 @@ export const MultilingualAIChat: React.FC<MultilingualAIChatProps> = ({
 }) => {
   const t = TRANSLATIONS[language];
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [activeDomain, setActiveDomain] = useState<'scheme_query' | 'grievance_process' | 'governance_bylaws' | 'general_cooperative' | null>(null);
+  const [activeDomain, setActiveDomain] = useState<'scheme_query' | 'grievance_process' | 'governance_bylaws' | 'general_cooperative' | 'out_of_scope' | null>(null);
   const [memoryLogs, setMemoryLogs] = useState<string[]>([]);
   const [showLogs, setShowLogs] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -397,10 +431,18 @@ export const MultilingualAIChat: React.FC<MultilingualAIChatProps> = ({
       if (!response.ok) throw new Error(`Server status ${response.status}`);
       const data = await response.json();
 
+      let replyContent = cleanTextForDisplay(data.reply || '');
+      const prefix = 'Hi, I am Sahaya.';
+      if (!replyContent) {
+        replyContent = prefix;
+      } else if (!replyContent.toLowerCase().startsWith('hi, i am sahaya') && !replyContent.toLowerCase().startsWith('hi i am sahaya')) {
+        replyContent = `${prefix}\n\n${replyContent}`;
+      }
+
       const assistantMessage: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: 'assistant',
-        content: cleanTextForDisplay(data.reply || 'Unable to generate response at this time.'),
+        content: replyContent,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         sources: data.sources || [],
         evidence_strength: data.evidence_strength || 'Statutory Law',
@@ -409,14 +451,16 @@ export const MultilingualAIChat: React.FC<MultilingualAIChatProps> = ({
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch {
+      const errDetail = language === 'kn'
+        ? 'ಕ್ಷಮಿಸಿ, ತಾಂತ್ರಿಕ ದೋಷ ಕಂಡುಬಂದಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.'
+        : language === 'hi'
+        ? 'क्षमा करें, तकनीकी त्रुटि हुई है। कृपया पुनः प्रयास करें।'
+        : 'Unable to retrieve statutory citations. Please verify connectivity and try again.';
+
       const errorMessage: ChatMessage = {
         id: `err-${Date.now()}`,
         sender: 'assistant',
-        content: language === 'kn'
-          ? 'ಕ್ಷಮಿಸಿ, ತಾಂತ್ರಿಕ ದೋಷ ಕಂಡುಬಂದಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.'
-          : language === 'hi'
-          ? 'क्षमा करें, तकनीकी त्रुटि हुई है। कृपया पुनः प्रयास करें।'
-          : 'Unable to retrieve statutory citations. Please verify connectivity and try again.',
+        content: `Hi, I am Sahaya.\n\n${errDetail}`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -446,13 +490,15 @@ export const MultilingualAIChat: React.FC<MultilingualAIChatProps> = ({
           }
           return (
             <React.Fragment key={index}>
-              <button
-                onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}
-                className="inline-flex items-center gap-0.5 font-bold text-emerald-700 hover:text-emerald-800 underline bg-emerald-50/80 px-1 py-0.5 rounded transition-colors text-[11px] sm:text-xs cursor-pointer"
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-800 underline bg-emerald-50 hover:bg-emerald-100/80 px-1.5 py-0.5 rounded transition-colors text-[11px] sm:text-xs cursor-pointer break-all"
               >
                 <span>{url}</span>
                 <ExternalLink className="w-3 h-3 inline shrink-0" />
-              </button>
+              </a>
               {suffix}
             </React.Fragment>
           );
@@ -713,13 +759,15 @@ export const MultilingualAIChat: React.FC<MultilingualAIChatProps> = ({
                             <p className="text-slate-600 italic">"{src.excerpt}"</p>
                             {src.url && (
                               <div className="mt-2 pt-1.5 border-t border-slate-100/80 flex justify-end">
-                                <button
-                                  onClick={() => window.open(src.url, '_blank', 'noopener,noreferrer')}
-                                  className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 hover:text-emerald-800 transition-colors bg-emerald-50 hover:bg-emerald-100/80 px-2 py-1 rounded cursor-pointer"
+                                <a
+                                  href={src.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 hover:text-emerald-800 transition-colors bg-emerald-50 hover:bg-emerald-100/80 px-2.5 py-1 rounded cursor-pointer"
                                 >
                                   <span>View Official Government Source</span>
                                   <ExternalLink className="w-2.5 h-2.5" />
-                                </button>
+                                </a>
                               </div>
                             )}
                           </div>
