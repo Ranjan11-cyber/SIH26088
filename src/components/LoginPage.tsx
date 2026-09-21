@@ -8,7 +8,9 @@ import {
   Lock, 
   UserCheck, 
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Globe,
+  ChevronDown
 } from 'lucide-react';
 import { SupportedLanguage, UserProfile, UserRole, Jurisdiction } from '../types';
 import { TRANSLATIONS } from '../i18n/translations';
@@ -71,6 +73,7 @@ const DEMO_PERSONAS: DemoPersona[] = [
 
 export const LoginPage: React.FC<LoginPageProps> = ({
   language,
+  onLanguageChange,
   onLoginSuccess,
   onContinueAsGuest,
 }) => {
@@ -203,18 +206,41 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         {/* Left Section: Secure Cooperative Access (Official Login) */}
         <div className="p-6 sm:p-8 md:col-span-7 flex flex-col justify-between space-y-6 border-b md:border-b-0 md:border-r border-slate-100">
           <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                <SahayaLogo size={28} />
+            {/* Header with integrated Language Switcher */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                  <SahayaLogo size={28} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-extrabold tracking-tight text-slate-900 uppercase">
+                    {t.login_portal_title || 'Sahaya Portal'}
+                  </h2>
+                  <p className="text-xs text-slate-500 font-medium leading-normal">
+                    {t.login_portal_subtitle || 'Official Cooperative Governance Platform'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-extrabold tracking-tight text-slate-900 uppercase">
-                  {t.login_portal_title || 'Sahaya Portal'}
-                </h2>
-                <p className="text-xs text-slate-500 font-medium leading-normal">
-                  {t.login_portal_subtitle || 'Official Cooperative Governance Platform'}
-                </p>
+
+              {/* In-Card Language Switcher */}
+              <div className="relative flex items-center self-start sm:self-auto shrink-0">
+                <Globe className="w-3.5 h-3.5 text-slate-500 absolute left-2 pointer-events-none z-10" />
+                <select
+                  id="language-selector-login-card"
+                  value={language}
+                  onChange={(e) => onLanguageChange(e.target.value as SupportedLanguage)}
+                  className="appearance-none bg-slate-100 hover:bg-slate-200 text-slate-900 pl-7 pr-7 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors cursor-pointer min-w-[110px]"
+                  aria-label="Select Language / ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ"
+                  title="Select Language / ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ"
+                >
+                  <option value="en">English</option>
+                  <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                  <option value="hi">हिंदी (Hindi)</option>
+                  <option value="ta">தமிழ் (Tamil)</option>
+                  <option value="te">తెలుగు (Telugu)</option>
+                  <option value="ml">മലയാളം (Malayalam)</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2 pointer-events-none z-10" />
               </div>
             </div>
 

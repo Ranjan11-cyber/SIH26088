@@ -10,7 +10,8 @@ import {
   LogOut,
   UserCheck,
   CheckCircle2,
-  Globe
+  Globe,
+  ChevronDown
 } from 'lucide-react';
 import { SupportedLanguage, UserProfile } from '../types';
 import { TRANSLATIONS } from '../i18n/translations';
@@ -62,11 +63,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           
           {/* Brand & Logo */}
           <div 
-            className="flex items-center gap-2.5 cursor-pointer select-none shrink-0" 
+            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer select-none shrink-0" 
             onClick={() => onSelectTab('chat')}
           >
             <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shadow-xs hover:border-emerald-300 transition-colors">
@@ -89,7 +90,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Clean Center Navigation Tabs (Desktop) */}
           {activeTab !== 'login' && (
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 min-w-0 mx-1 lg:mx-2 overflow-x-auto scrollbar-none py-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -97,13 +98,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => onSelectTab(item.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                       isActive
                         ? 'bg-slate-900 text-white shadow-2xs'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                    <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
                     <span>{item.label}</span>
                   </button>
                 );
@@ -112,33 +113,37 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           {/* Right Utilities: Language, Role Pill, and Auth */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto z-20">
             
             {/* Minimal Language Switcher */}
-            <div className="relative flex items-center">
-              <Globe className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 pointer-events-none" />
+            <div className="relative flex items-center shrink-0">
+              <Globe className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 pointer-events-none z-10" />
               <select
+                id="language-selector-navbar"
                 value={language}
                 onChange={(e) => onLanguageChange(e.target.value as SupportedLanguage)}
-                className="appearance-none bg-slate-100 hover:bg-slate-200 text-slate-800 pl-8 pr-6 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors cursor-pointer"
+                className="appearance-none bg-slate-100 hover:bg-slate-200 text-slate-900 pl-8 pr-7 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors cursor-pointer min-w-[110px] sm:min-w-[125px]"
+                aria-label="Select Language / ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ"
+                title="Select Language / ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ"
               >
                 <option value="en">English</option>
-                <option value="kn">ಕನ್ನಡ</option>
-                <option value="hi">हिंदी</option>
-                <option value="ta">தமிழ்</option>
-                <option value="te">తెలుగు</option>
-                <option value="ml">മലയാളം</option>
+                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                <option value="hi">हिंदी (Hindi)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="ml">മലയാളം (Malayalam)</option>
               </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2 pointer-events-none z-10" />
             </div>
 
             {/* Role Switcher Pill */}
             <button
               onClick={onOpenRoleModal}
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs transition-colors cursor-pointer"
+              className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs transition-colors cursor-pointer shrink-0"
               title="Change your citizen role"
             >
               <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="font-medium truncate max-w-[130px]">{getRoleLabel()}</span>
+              <span className="font-medium truncate max-w-[120px]">{getRoleLabel()}</span>
             </button>
 
             {/* Authentication Action */}

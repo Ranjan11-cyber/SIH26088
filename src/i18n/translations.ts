@@ -135,15 +135,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     footer_text: 'Sahaya is a civic intelligence tool developed to support cooperative governance. All citations reference the Karnataka Co-operative Societies Act 1959, MSCS Act 2002, and official gazettes.'
   },
   kn: {
-    app_title: 'ಸಹಾಯ (ಸಹಕಾರ • Sahaya)',
-    app_tagline: 'ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆ (AI) ಆಧಾರಿತ ಬಹುಭಾಷಾ ಸಹಕಾರ ಆಡಳಿತ ಹಾಗೂ ಸದಸ್ಯರ ಕುಂದುಕೊರತೆ ನಿವಾರಣಾ ವೇದಿಕೆ',
+    app_title: 'ಸಹಾಯ',
+    app_tagline: 'ಸಹಕಾರ ಆಡಳಿತ ಹಾಗೂ ಸದಸ್ಯರ ಸೇವಾ ವೇದಿಕೆ',
     gov_subtitle: 'ಸಹಕಾರ ಇಲಾಖೆ • ನಾಗರಿಕ ಮಾಹಿತಿ ಉಪಕ್ರಮ',
-    tab_chat: 'AI ಕಾನೂನು & ಉಪ-ನಿಯಮ ಮಾರ್ಗದರ್ಶಿ',
-    tab_schemes: 'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು & ಸಹಾಯಧನ',
-    tab_petition: 'ಕಾನೂನುಬದ್ಧ ದೂರು ಅರ್ಜಿ ರಚಕ',
-    tab_tracker: 'ದೂರಿನ ಸ್ಥಿತಿ ಪರಿಶೀಲನೆ',
-    tab_bylaws: 'ಕಾಯ್ದೆಗಳು & ಉಪ-ನಿಯಮಗಳ ಗ್ರಂಥಾಲಯ',
-    tab_civic: 'ಪಾರದರ್ಶಕತೆ ಅಂಕಿ-ಅಂಶಗಳು',
+    tab_chat: 'AI ಮಾರ್ಗದರ್ಶಿ',
+    tab_schemes: 'ಯೋಜನೆಗಳು',
+    tab_petition: 'ದೂರು ಅರ್ಜಿ',
+    tab_tracker: 'ಸ್ಥಿತಿ ಟ್ರ್ಯಾಕರ್',
+    tab_bylaws: 'ಕಾಯ್ದೆಗಳು',
+    tab_civic: 'ವಿಶ್ಲೇಷಣೆ',
     
     select_role_title: 'ನಿಮ್ಮ ಪಾತ್ರ ಮತ್ತು ನ್ಯಾಯವ್ಯಾಪ್ತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ',
     select_role_subtitle: 'ಸಹಾಯ ವೇದಿಕೆಯು ನಿಮ್ಮ ಪಾತ್ರಕ್ಕೆ ತಕ್ಕಂತೆ ಉಪ-ನಿಯಮಗಳು, ಸಾಲ ಸೌಲಭ್ಯಗಳು ಮತ್ತು ಯೋಜನೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸುತ್ತದೆ.',
@@ -260,15 +260,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     footer_text: 'ಸಹಾಯವು ಸಹಕಾರ ಆಡಳಿತಕ್ಕಾಗಿ ವಿನ್ಯಾಸಗೊಳಿಸಲಾದ ಮುಕ್ತ ಮಾಹಿತಿ ವೇದಿಕೆಯಾಗಿದೆ. ಎಲ್ಲಾ ಉಲ್ಲೇಖಗಳು ಅಧಿಕೃತ ಕರ್ನಾಟಕ ಸಹಕಾರ ಸಂಘಗಳ ಕಾಯ್ದೆ ೧೯೫೯ ಆಧಾರಿತವಾಗಿವೆ.'
   },
   hi: {
-    app_title: 'सहाय (सहकार • Sahaya)',
-    app_tagline: 'एआई-संचालित बहुभाषी सहकारी शासन एवं सदस्य शिकायत निवारण प्लेटफॉर्म',
+    app_title: 'सहाय',
+    app_tagline: 'सहकारी शासन एवं सदस्य सेवा मंच',
     gov_subtitle: 'सहकारिता विभाग • नागरिक सहकारिता पहल',
-    tab_chat: 'AI कानूनी एवं उप-नियम मार्गदर्शक',
-    tab_schemes: 'सरकारी योजनाएं एवं अनुदान',
-    tab_petition: 'वैधानिक शिकायत याचिका निर्माता',
-    tab_tracker: 'शिकायत स्थिति जांचें',
-    tab_bylaws: 'अधिनियम एवं उप-नियम पुस्तकालय',
-    tab_civic: 'नागरिक विश्लेषण',
+    tab_chat: 'AI सलाहकार',
+    tab_schemes: 'योजनाएं',
+    tab_petition: 'शिकायत दर्ज',
+    tab_tracker: 'स्थिति ट्रैक',
+    tab_bylaws: 'उप-नियम',
+    tab_civic: 'विश्लेषण',
     
     select_role_title: 'अपनी नागरिक भूमिका एवं क्षेत्राधिकार चुनें',
     select_role_subtitle: 'सहाय आपके अनुरूप उप-नियम, ऋण नियम और योजनाओं की सटीक जानकारी प्रदान करता है।',
@@ -517,7 +517,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     footer_text: 'சகாயா என்பது கூட்டுறவு நிர்வாகத்தை ஆதரிக்க உருவாக்கப்பட்ட குடிமக்கள் உதவி தளமாகும். அனைத்து மேற்கோள்களும் அதிகாரப்பூர்வ கூட்டுறவுச் சட்டங்களை அடிப்படையாகக் கொண்டவை.'
   },
   te: {
-    app_title: 'సహాయ (సహకార • Sahaya)',
+    app_title: 'సహాయ',
     app_tagline: 'సహకార పాలన & సభ్యుల ఫిర్యాదుల పరిష్కార వేదిక',
     gov_subtitle: 'సహకార శాఖ • పౌర సమాచార చొరవ',
     tab_chat: 'AI చట్టపరమైన సలహాదారు',
@@ -649,7 +649,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     footer_text: 'సహాయ అనేది సహకార పాలనకు తోడ్పడే పౌర సమాచార వేదిక. అన్ని వివరాలు అధికారిక సహకార చట్టాలు మరియు గెజిట్లపై ఆధారపడి ఉంటాయి.'
   },
   ml: {
-    app_title: 'സഹായ (സഹകരണ • Sahaya)',
+    app_title: 'സഹായ',
     app_tagline: 'സഹകരണ ഭരണനിർവ്വഹണ & പരാതി പരിഹാര പ്ലാറ്റ്‌ഫോം',
     gov_subtitle: 'സഹകരണ വകുപ്പ് • പൗര വിവര സംരംഭം',
     tab_chat: 'AI നിയമോപദേശകൻ',
