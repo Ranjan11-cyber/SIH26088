@@ -559,9 +559,25 @@ CRITICAL FORMATTING INSTRUCTIONS (STRICT COMPLIANCE REQUIRED):
       const sources = getDynamicSources(message, jurisdiction, language);
 
       const rawReply = sanitizeText(generatedResult.text);
-      const formattedReply = rawReply.toLowerCase().startsWith('hi, i am sahaya') || rawReply.toLowerCase().startsWith('hi i am sahaya')
+      let prefix = 'Hi, I am Sahaya.';
+      if (language === 'kn') {
+        prefix = 'ನಮಸ್ಕಾರ, ನಾನು ಸಹಾಯ.';
+      } else if (language === 'hi') {
+        prefix = 'नमस्ते, मैं सहाय हूँ।';
+      }
+
+      const lowerReply = rawReply.toLowerCase();
+      const hasPrefix = 
+        lowerReply.startsWith('hi, i am sahaya') || 
+        lowerReply.startsWith('hi i am sahaya') ||
+        lowerReply.startsWith('ನಮಸ್ಕಾರ, ನಾನು ಸಹಾಯ') ||
+        lowerReply.startsWith('ನಮಸ್ಕಾರ ನಾನು ಸಹಾಯ') ||
+        lowerReply.startsWith('नमस्ते, मैं सहाय') ||
+        lowerReply.startsWith('नमस्ते मैं सहाय');
+
+      const formattedReply = hasPrefix
         ? rawReply
-        : `Hi, I am Sahaya.\n\n${rawReply}`;
+        : `${prefix}\n\n${rawReply}`;
 
       return res.json({
         reply: formattedReply,

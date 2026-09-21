@@ -432,11 +432,28 @@ export const MultilingualAIChat: React.FC<MultilingualAIChatProps> = ({
       const data = await response.json();
 
       let replyContent = cleanTextForDisplay(data.reply || '');
-      const prefix = 'Hi, I am Sahaya.';
+      let prefix = 'Hi, I am Sahaya.';
+      if (language === 'kn') {
+        prefix = 'ನಮಸ್ಕಾರ, ನಾನು ಸಹಾಯ.';
+      } else if (language === 'hi') {
+        prefix = 'नमस्ते, मैं सहाय हूँ।';
+      }
+
       if (!replyContent) {
         replyContent = prefix;
-      } else if (!replyContent.toLowerCase().startsWith('hi, i am sahaya') && !replyContent.toLowerCase().startsWith('hi i am sahaya')) {
-        replyContent = `${prefix}\n\n${replyContent}`;
+      } else {
+        const lowerReply = replyContent.toLowerCase();
+        const hasPrefix = 
+          lowerReply.startsWith('hi, i am sahaya') || 
+          lowerReply.startsWith('hi i am sahaya') ||
+          lowerReply.startsWith('ನಮಸ್ಕಾರ, ನಾನು ಸಹಾಯ') ||
+          lowerReply.startsWith('ನಮಸ್ಕಾರ ನಾನು ಸಹಾಯ') ||
+          lowerReply.startsWith('नमस्ते, मैं सहाय') ||
+          lowerReply.startsWith('नमस्ते मैं सहाय');
+
+        if (!hasPrefix) {
+          replyContent = `${prefix}\n\n${replyContent}`;
+        }
       }
 
       const assistantMessage: ChatMessage = {
@@ -457,10 +474,17 @@ export const MultilingualAIChat: React.FC<MultilingualAIChatProps> = ({
         ? 'क्षमा करें, तकनीकी त्रुटि हुई है। कृपया पुनः प्रयास करें।'
         : 'Unable to retrieve statutory citations. Please verify connectivity and try again.';
 
+      let prefix = 'Hi, I am Sahaya.';
+      if (language === 'kn') {
+        prefix = 'ನಮಸ್ಕಾರ, ನಾನು ಸಹಾಯ.';
+      } else if (language === 'hi') {
+        prefix = 'नमस्ते, मैं सहाय हूँ।';
+      }
+
       const errorMessage: ChatMessage = {
         id: `err-${Date.now()}`,
         sender: 'assistant',
-        content: `Hi, I am Sahaya.\n\n${errDetail}`,
+        content: `${prefix}\n\n${errDetail}`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages(prev => [...prev, errorMessage]);
